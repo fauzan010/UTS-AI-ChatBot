@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Chatbot Asisten Akademik</title>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin:20px auto; }
+    #chat { border:1px solid #ccc; padding:10px; height:300px; overflow:auto;}
+    .me{color:blue;}
+    .bot{color:green;}
+  </style>
+</head>
+<body>
+  <h2>Chatbot Asisten Akademik</h2>
+  <div id="chat"></div>
+  <input id="input" type="text" placeholder="Tanya... mis: siapa dosen AI?" style="width:80%">
+  <button id="btn">Kirim</button>
+
+  <script>
+    const webAppUrl = https://script.google.com/macros/s/AKfycby7OG4x8kP-937An5xJb5l1ulltvFEoJTu-5GAyV7ryQzL7VmXiVEfzBXCgxGdUE0Yd/exec; // ganti dengan URL Apps Script mu
+
+    document.getElementById('btn').addEventListener('click', send);
+    document.getElementById('input').addEventListener('keydown', function(e){
+      if(e.key === 'Enter') send();
+    });
+
+    async function send() {
+      const q = document.getElementById('input').value.trim();
+      if(!q) return;
+      appendChat('Kamu', q, 'me');
+      document.getElementById('input').value = '';
+
+      try {
+        const res = await fetch(webAppUrl + '?q=' + encodeURIComponent(q));
+        const data = await res.json();
+        appendChat('Bot', data.reply || data.error || 'Tidak ada respon', 'bot');
+      } catch (err) {
+        appendChat('Bot', 'Error: ' + err.message, 'bot');
+      }
+    }
+
+    function appendChat(who, text, cls){
+      const div = document.getElementById('chat');
+      const p = document.createElement('p');
+      p.className = cls;
+      p.innerHTML = `<strong>${who}:</strong> ${text}`;
+      div.appendChild(p);
+      div.scrollTop = div.scrollHeight;
+    }
+  </script>
+</body>
+</html>
